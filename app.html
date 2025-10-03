@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedu-Nova - AI Assistant for Healthcare Professionals</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 812px;
+            background: white;
+            position: relative;
+            display: none;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .screen-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin: 60px 0 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #1e3a8a;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .app-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 60px;
+        }
+
+        .btn-primary {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1e3a8a;
+            border: 2px solid #1e3a8a;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f4ff;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1e3a8a;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .voice-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .mic-btn {
+            width: 48px;
+            height: 48px;
+            background: #1e3a8a;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .mic-btn:hover {
+            background: #1e40af;
+            transform: scale(1.05);
+        }
+
+        .permission-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .permission-icon {
+            width: 48px;
+            height: 48px;
+            background: #1e3a8a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: #e5e7eb;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #1e3a8a;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(28px);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .date-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .schedule-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #1e3a8a;
+        }
+
+        .event-time {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+        }
+
+        .event-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .event-description {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .floating-mic {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 64px;
+            height: 64px;
+            background: #1e3a8a;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(30, 58, 138, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .floating-mic:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+
+        .notification-banner {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        .nav-tab:not(.active) {
+            color: #6b7280;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #1e3a8a;
+        }
+
+        .nav-item:not(.active) {
+            color: #9ca3af;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .task-icon {
+            width: 32px;
+            height: 32px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .emergency-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(239, 68, 68, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .emergency-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            max-width: 300px;
+            margin: 20px;
+        }
+
+        .emergency-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 16px;
+        }
+
+        .weekly-schedule {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .day-column {
+            min-width: 80px;
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .day-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .day-date {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mini-event {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 6px 4px;
+            border-left: 3px solid #e5e7eb;
+        }
+
+        .mini-event.current {
+            background: #dbeafe;
+            border-left-color: #1e3a8a;
+        }
+
+        .mini-event .event-time {
+            font-size: 10px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+
+        .mini-event .event-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .day-off {
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+            padding: 8px 0;
+        }
+
+        .ai-suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .suggestion-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .suggestion-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .suggestion-icon {
+            font-size: 20px;
+        }
+
+        .suggestion-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ai-conversation {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .conversation-bubble {
+            margin-bottom: 12px;
+            display: flex;
+        }
+
+        .ai-bubble {
+            justify-content: flex-start;
+        }
+
+        .user-bubble {
+            justify-content: flex-end;
+        }
+
+        .bubble-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+        }
+
+        .ai-bubble .bubble-content {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .user-bubble .bubble-content {
+            background: rgba(255,255,255,0.9);
+            color: #1f2937;
+        }
+
+        .ai-input-container {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 335px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .ai-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .ai-input {
+            width: 100%;
+            padding: 12px 50px 12px 16px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.9);
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .ai-input:focus {
+            outline: none;
+            background: white;
+        }
+
+        .ai-send-btn {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: #1e3a8a;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-voice-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .task-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-card.completed {
+            opacity: 0.7;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .task-priority {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .task-priority.high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .task-priority.medium {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .task-priority.low {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .task-status.completed {
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .task-description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .task-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .task-progress .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .task-action-btn {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-action-btn:hover {
+            background: #1e40af;
+        }
+
+        @media (max-width: 480px) {
+            .phone-container {
+                margin: 0;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            
+            .screen {
+                height: 100vh;
+            }
+
+            .ai-input-container {
+                width: calc(100% - 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Phone Container -->
+    <div class="phone-container">
+        <!-- Welcome Screen -->
+        <div class="screen active" id="welcome">
+            <div class="status-bar" style="background: #1e3a8a; color: white;">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content" style="background: #1e3a8a; color: white;">
+                <div class="logo-container">
+                    <div class="logo" style="background: white; color: #1e3a8a;">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="#1e3a8a">
+                            <path d="M20 4C12.3 4 6 10.3 6 18s6.3 14 14 14 14-6.3 14-14S27.7 4 20 4zm0 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 14h-8v-2h2v-4h-2v-2h6v6h2v2z"/>
+                            <circle cx="32" cy="8" r="6" fill="#10b981"/>
+                            <path d="M29 6h6v4h-6z" fill="white"/>
+                        </svg>
+                    </div>
+                    <h1 class="app-title" style="color: white;">Schedu-Nova</h1>
+                    <p class="tagline" style="color: rgba(255,255,255,0.8);">Your AI Manager for a Seamless Workday</p>
+                </div>
+                <button class="btn-primary" style="background: white; color: #1e3a8a;" onclick="showScreen('signup')">Get Started</button>
+                <p style="text-align: center; margin-top: 20px; color: rgba(255,255,255,0.8);">
+                    Already a user? <a href="#" onclick="showScreen('login')" style="color: white; text-decoration: underline; font-weight: 600;">Log In</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Sign Up Screen -->
+        <div class="screen" id="signup">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content">
+                <div style="text-align: center; margin: 40px 0;">
+                    <div class="logo" style="margin: 0 auto 20px;">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="white">
+                            <path d="M20 4C12.3 4 6 10.3 6 18s6.3 14 14 14 14-6.3 14-14S27.7 4 20 4zm0 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 14h-8v-2h2v-4h-2v-2h6v6h2v2z"/>
+                            <circle cx="32" cy="8" r="6" fill="#10b981"/>
+                            <path d="M29 6h6v4h-6z" fill="white"/>
+                        </svg>
+                    </div>
+                    <h2 class="step-title">Create Account</h2>
+                    <p class="step-description">Join Schedu-Nova and get your personalized AI assistant.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" placeholder="Enter your full name" id="signupName">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="Enter your email address" id="signupEmail">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="Create a password" id="signupPassword">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Position</label>
+                    <select class="form-input" id="signupPosition">
+                        <option value="">Select your position</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="nurse">Nurse</option>
+                        <option value="surgeon">Surgeon</option>
+                        <option value="resident">Resident</option>
+                        <option value="physician-assistant">Physician Assistant</option>
+                        <option value="hospital-staff">Hospital Staff</option>
+                        <option value="administrator">Administrator</option>
+                        <option value="other">Other Healthcare Professional</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <button class="btn-primary" onclick="validateSignup()">Create Account</button>
+                    <p style="text-align: center; margin-top: 16px; color: #6b7280;">
+                        Already have an account? <a href="#" onclick="showScreen('login')" style="color: #1e3a8a; text-decoration: none; font-weight: 600;">Log In</a>
+                    </p>
+                    <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 16px;">
+                        By continuing, you agree to our Terms of Service and Privacy Policy
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log In Screen -->
+        <div class="screen" id="login">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content">
+                <div style="text-align: center; margin: 60px 0 40px;">
+                    <div class="logo" style="margin: 0 auto 20px;">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="white">
+                            <path d="M20 4C12.3 4 6 10.3 6 18s6.3 14 14 14 14-6.3 14-14S27.7 4 20 4zm0 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 14h-8v-2h2v-4h-2v-2h6v6h2v2z"/>
+                            <circle cx="32" cy="8" r="6" fill="#10b981"/>
+                            <path d="M29 6h6v4h-6z" fill="white"/>
+                        </svg>
+                    </div>
+                    <h2 class="step-title">Welcome Back</h2>
+                    <p class="step-description">Sign in to your Schedu-Nova account.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="Enter your email address" id="loginEmail">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="Enter your password" id="loginPassword">
+                </div>
+
+                <div style="text-align: right; margin-bottom: 30px;">
+                    <a href="#" style="color: #1e3a8a; text-decoration: none; font-size: 14px;">Forgot Password?</a>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <button class="btn-primary" onclick="validateLogin()">Log In</button>
+                    <p style="text-align: center; margin-top: 16px; color: #6b7280;">
+                        Don't have an account? <a href="#" onclick="showScreen('signup')" style="color: #1e3a8a; text-decoration: none; font-weight: 600;">Sign Up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onboarding Step 1 -->
+        <div class="screen" id="onboarding1">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 33%"></div>
+                </div>
+                <h2 class="step-title">Set Your Schedule</h2>
+                <p class="step-description">Add your weekly schedule so Schedu-Nova can manage your time effectively.</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Day</label>
+                    <select class="form-input">
+                        <option>Monday</option>
+                        <option>Tuesday</option>
+                        <option>Wednesday</option>
+                        <option>Thursday</option>
+                        <option>Friday</option>
+                        <option>Saturday</option>
+                        <option>Sunday</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Time</label>
+                    <input type="time" class="form-input" value="07:00">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Event Description</label>
+                    <input type="text" class="form-input" placeholder="e.g., Shift starts, Patient rounds">
+                    <div class="voice-input">
+                        <button class="mic-btn" onclick="toggleVoiceInput(this)">🎤</button>
+                        <span style="color: #6b7280; font-size: 14px;">Tap to speak</span>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="addEvent()" style="margin-bottom: 12px;">Add Event</button>
+                <button class="btn-secondary" onclick="showScreen('onboarding2')">Continue</button>
+            </div>
+        </div>
+
+        <!-- Onboarding Step 2 -->
+        <div class="screen" id="onboarding2">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 66%"></div>
+                </div>
+                <h2 class="step-title">Smart Listening</h2>
+                <p class="step-description">Allow Schedu-Nova to listen for schedule changes and emergencies.</p>
+                
+                <div class="permission-card">
+                    <div class="permission-icon">🎤</div>
+                    <h3 style="text-align: center; margin-bottom: 12px; font-size: 18px; font-weight: 600;">Microphone Access</h3>
+                    <p style="text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                        Grant permission to let Schedu-Nova adapt your schedule in real-time by detecting conversations about emergencies or schedule changes.
+                    </p>
+                    <div style="background: #f0f9ff; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="font-size: 12px; color: #0369a1; margin: 0;">
+                            🔒 Your privacy is protected. Audio is processed locally and never stored or shared.
+                        </p>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="requestPermission()" style="margin-bottom: 12px;">Allow Microphone Access</button>
+                <button class="btn-secondary" onclick="showScreen('onboarding3')">Skip for Now</button>
+            </div>
+        </div>
+
+        <!-- Onboarding Step 3 -->
+        <div class="screen" id="onboarding3">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+                <h2 class="step-title">AI Assistant</h2>
+                <p class="step-description">Enable background AI for voice reminders, task completion, and automatic adjustments.</p>
+                
+                <div class="permission-card">
+                    <div class="permission-icon">🤖</div>
+                    <h3 style="text-align: center; margin-bottom: 12px; font-size: 18px; font-weight: 600;">Background AI Agent</h3>
+                    <p style="text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                        Let Schedu-Nova work in the background to send reminders, draft emails, and make schedule adjustments automatically.
+                    </p>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                        <span style="font-weight: 600;">Enable Background AI</span>
+                        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="showScreen('dashboard')">Finish Setup</button>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="screen" id="dashboard">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content" style="padding-bottom: 80px;">
+                <div class="dashboard-header">
+                    <div>
+                        <h2 class="welcome-text" id="welcomeText">Good morning, Dr. Smith</h2>
+                        <p class="date-text">Monday, December 16, 2024</p>
+                    </div>
+                    <button class="mic-btn" onclick="startVoiceCommand()">🎤</button>
+                </div>
+
+                <div class="notification-banner">
+                    <span style="font-size: 20px;">ℹ️</span>
+                    <div>
+                        <p style="margin: 0; font-weight: 600; font-size: 14px;">Schedule Updated</p>
+                        <p style="margin: 0; font-size: 12px; color: #6b7280;">Emergency surgery moved your 2 PM meeting to 4 PM</p>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1f2937;">Weekly Schedule</h3>
+                
+                <div class="weekly-schedule">
+                    <div class="day-column">
+                        <div class="day-header">Mon</div>
+                        <div class="day-date">16</div>
+                        <div class="day-events">
+                            <div class="mini-event current">
+                                <div class="event-time">7:00 AM</div>
+                                <div class="event-title">Shift Start</div>
+                            </div>
+                            <div class="mini-event">
+                                <div class="event-time">10:30 AM</div>
+                                <div class="event-title">Consultation</div>
+                            </div>
+                            <div class="mini-event">
+                                <div class="event-time">4:00 PM</div>
+                                <div class="event-title">Team Meeting</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-column">
+                        <div class="day-header">Tue</div>
+                        <div class="day-date">17</div>
+                        <div class="day-events">
+                            <div class="mini-event">
+                                <div class="event-time">8:00 AM</div>
+                                <div class="event-title">Rounds</div>
+                            </div>
+                            <div class="mini-event">
+                                <div class="event-time">2:00 PM</div>
+                                <div class="event-title">Surgery</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-column">
+                        <div class="day-header">Wed</div>
+                        <div class="day-date">18</div>
+                        <div class="day-events">
+                            <div class="mini-event">
+                                <div class="event-time">7:00 AM</div>
+                                <div class="event-title">Shift Start</div>
+                            </div>
+                            <div class="mini-event">
+                                <div class="event-time">11:00 AM</div>
+                                <div class="event-title">Conference</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-column">
+                        <div class="day-header">Thu</div>
+                        <div class="day-date">19</div>
+                        <div class="day-events">
+                            <div class="mini-event">
+                                <div class="event-time">9:00 AM</div>
+                                <div class="event-title">Training</div>
+                            </div>
+                            <div class="mini-event">
+                                <div class="event-time">3:00 PM</div>
+                                <div class="event-title">Review</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-column">
+                        <div class="day-header">Fri</div>
+                        <div class="day-date">20</div>
+                        <div class="day-events">
+                            <div class="mini-event">
+                                <div class="event-time">7:00 AM</div>
+                                <div class="event-title">Shift Start</div>
+                            </div>
+                            <div class="mini-event">
+                                <div class="event-time">1:00 PM</div>
+                                <div class="event-title">Admin</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-column">
+                        <div class="day-header">Sat</div>
+                        <div class="day-date">21</div>
+                        <div class="day-events">
+                            <div class="mini-event">
+                                <div class="event-time">10:00 AM</div>
+                                <div class="event-title">On-call</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="day-column">
+                        <div class="day-header">Sun</div>
+                        <div class="day-date">22</div>
+                        <div class="day-events">
+                            <div class="day-off">Rest Day</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px; color: #1f2937;">Today's Details</h3>
+                
+                <div class="schedule-card">
+                    <div class="event-time">7:00 AM - 3:00 PM</div>
+                    <div class="event-title">Hospital Shift</div>
+                    <div class="event-description">Emergency Department - Ward A</div>
+                </div>
+
+                <div class="schedule-card">
+                    <div class="event-time">10:30 AM</div>
+                    <div class="event-title">Patient Consultation</div>
+                    <div class="event-description">Room 204 - Follow-up appointment</div>
+                </div>
+
+                <div class="schedule-card">
+                    <div class="event-time">1:00 PM</div>
+                    <div class="event-title">Lunch Break</div>
+                    <div class="event-description">Staff cafeteria</div>
+                </div>
+
+                <div class="schedule-card">
+                    <div class="event-time">4:00 PM</div>
+                    <div class="event-title">Team Meeting</div>
+                    <div class="event-description">Conference Room B - Rescheduled from 2 PM</div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="showScreen('dashboard')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Dashboard</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('ai-assistant')">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">AI Assistant</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('tasks')">
+                    <div class="nav-icon">✓</div>
+                    <div class="nav-label">Tasks</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('settings')">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Screen -->
+        <div class="screen" id="ai-assistant">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content" style="padding-bottom: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="width: 120px; height: 120px; margin: 0 auto 20px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+                        <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <svg width="40" height="40" viewBox="0 0 40 40" fill="white">
+                                <path d="M20 2C10.6 2 3 9.6 3 19s7.6 17 17 17 17-7.6 17-17S29.4 2 20 2zm0 6c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zm0 24c-4.4 0-8.2-2.2-10.4-5.6.2-3.4 6.8-5.2 10.4-5.2s10.2 1.8 10.4 5.2C28.2 29.8 24.4 32 20 32z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Schedu-Nova AI</h2>
+                    <p style="font-size: 16px; opacity: 0.8; margin-bottom: 30px;">How can I help you today?</p>
+                </div>
+
+                <div class="ai-suggestions">
+                    <div class="suggestion-card" onclick="askAI('Schedule my next patient consultation')">
+                        <div class="suggestion-icon">📅</div>
+                        <div class="suggestion-text">Schedule my next patient consultation</div>
+                    </div>
+                    
+                    <div class="suggestion-card" onclick="askAI('Remind me about medication reviews')">
+                        <div class="suggestion-icon">💊</div>
+                        <div class="suggestion-text">Remind me about medication reviews</div>
+                    </div>
+                    
+                    <div class="suggestion-card" onclick="askAI('Draft email to Dr. Johnson')">
+                        <div class="suggestion-icon">✉️</div>
+                        <div class="suggestion-text">Draft email to Dr. Johnson</div>
+                    </div>
+                    
+                    <div class="suggestion-card" onclick="askAI('Check my availability tomorrow')">
+                        <div class="suggestion-icon">🔍</div>
+                        <div class="suggestion-text">Check my availability tomorrow</div>
+                    </div>
+                </div>
+
+                <div class="ai-conversation" id="aiConversation" style="display: none;">
+                    <div class="conversation-bubble ai-bubble">
+                        <div class="bubble-content">
+                            <p>I understand you'd like to schedule your next patient consultation. Let me check your availability...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="conversation-bubble user-bubble">
+                        <div class="bubble-content">
+                            <p>Schedule my next patient consultation</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai-input-container">
+                    <div class="ai-input-wrapper">
+                        <input type="text" placeholder="Ask me anything..." class="ai-input" id="aiInput">
+                        <button class="ai-send-btn" onclick="sendAIMessage()">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 10l16-8-8 16-2-6-6-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <button class="ai-voice-btn" onclick="startAIVoice()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="showScreen('dashboard')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Dashboard</div>
+                </div>
+                <div class="nav-item active">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">AI Assistant</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('tasks')">
+                    <div class="nav-icon">✓</div>
+                    <div class="nav-label">Tasks</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('settings')">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Screen -->
+        <div class="screen" id="tasks">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content" style="padding-bottom: 80px;">
+                <h2 class="step-title">Tasks</h2>
+                
+                <div class="nav-tabs">
+                    <div class="nav-tab active" onclick="switchTaskTab(this, 'ongoing')">Ongoing</div>
+                    <div class="nav-tab" onclick="switchTaskTab(this, 'completed')">Completed</div>
+                    <div class="nav-tab" onclick="switchTaskTab(this, 'todo')">To-Do</div>
+                </div>
+
+                <div id="ongoing-tasks">
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-priority high">High Priority</div>
+                            <div class="task-time">Started 2 hours ago</div>
+                        </div>
+                        <div class="task-title">Patient Chart Review</div>
+                        <div class="task-description">Review and update charts for Ward A patients</div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
+                            </div>
+                            <span class="progress-text">65% Complete</span>
+                        </div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-priority medium">Medium Priority</div>
+                            <div class="task-time">Started 30 min ago</div>
+                        </div>
+                        <div class="task-title">Email Follow-ups</div>
+                        <div class="task-description">Send follow-up emails to 5 patients</div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 40%"></div>
+                            </div>
+                            <span class="progress-text">2 of 5 sent</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="completed-tasks" style="display: none;">
+                    <div class="task-card completed">
+                        <div class="task-header">
+                            <div class="task-status completed">✓ Completed</div>
+                            <div class="task-time">Completed 1 hour ago</div>
+                        </div>
+                        <div class="task-title">Morning Rounds</div>
+                        <div class="task-description">Complete patient rounds for Emergency Department</div>
+                    </div>
+
+                    <div class="task-card completed">
+                        <div class="task-header">
+                            <div class="task-status completed">✓ Completed</div>
+                            <div class="task-time">Completed 3 hours ago</div>
+                        </div>
+                        <div class="task-title">Medication Orders</div>
+                        <div class="task-description">Process and approve medication orders</div>
+                    </div>
+
+                    <div class="task-card completed">
+                        <div class="task-header">
+                            <div class="task-status completed">✓ Completed</div>
+                            <div class="task-time">Completed yesterday</div>
+                        </div>
+                        <div class="task-title">Staff Meeting Notes</div>
+                        <div class="task-description">Distribute meeting notes to department staff</div>
+                    </div>
+                </div>
+
+                <div id="todo-tasks" style="display: none;">
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-priority high">High Priority</div>
+                            <div class="task-time">Due in 2 hours</div>
+                        </div>
+                        <div class="task-title">Surgery Prep</div>
+                        <div class="task-description">Prepare for 2 PM emergency surgery</div>
+                        <button class="task-action-btn" onclick="startTask(this)">Start Task</button>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-priority medium">Medium Priority</div>
+                            <div class="task-time">Due tomorrow</div>
+                        </div>
+                        <div class="task-title">Training Module</div>
+                        <div class="task-description">Complete mandatory safety training</div>
+                        <button class="task-action-btn" onclick="startTask(this)">Start Task</button>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-priority low">Low Priority</div>
+                            <div class="task-time">Due this week</div>
+                        </div>
+                        <div class="task-title">Equipment Inventory</div>
+                        <div class="task-description">Update medical equipment inventory</div>
+                        <button class="task-action-btn" onclick="startTask(this)">Start Task</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="showScreen('dashboard')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Dashboard</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('ai-assistant')">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">AI Assistant</div>
+                </div>
+                <div class="nav-item active">
+                    <div class="nav-icon">✓</div>
+                    <div class="nav-label">Tasks</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('settings')">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div class="screen" id="settings">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            <div class="screen-content" style="padding-bottom: 80px;">
+                <h2 class="step-title">Settings</h2>
+                
+                <div style="background: white; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Voice Permissions</div>
+                                <div style="font-size: 14px; color: #6b7280;">Microphone and listening settings</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Background AI Assistant</div>
+                                <div style="font-size: 14px; color: #6b7280;">Automatic task completion and reminders</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Smart Notifications</div>
+                                <div style="font-size: 14px; color: #6b7280;">AI-powered schedule alerts</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; cursor: pointer;" onclick="showEmergencyDemo()">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Emergency Mode</div>
+                                <div style="font-size: 14px; color: #6b7280;">Quick access during urgencies</div>
+                            </div>
+                            <span style="color: #9ca3af;">›</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" onclick="editSchedule()">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Reset Schedule</div>
+                                <div style="font-size: 14px; color: #6b7280;">Clear and rebuild your weekly schedule</div>
+                            </div>
+                            <span style="color: #9ca3af;">›</span>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;" onclick="editSchedule()">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Edit Schedule</div>
+                                <div style="font-size: 14px; color: #6b7280;">Modify your weekly schedule</div>
+                            </div>
+                            <span style="color: #9ca3af;">›</span>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; cursor: pointer;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Sync Calendar</div>
+                                <div style="font-size: 14px; color: #6b7280;">Connect with external calendars</div>
+                            </div>
+                            <span style="color: #9ca3af;">›</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Privacy & Security</div>
+                                <div style="font-size: 14px; color: #6b7280;">Data protection settings</div>
+                            </div>
+                            <span style="color: #9ca3af;">›</span>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Account Settings</div>
+                                <div style="font-size: 14px; color: #6b7280;">Manage your profile and preferences</div>
+                            </div>
+                            <span style="color: #9ca3af;">›</span>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; cursor: pointer;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Help & Support</div>
+                                <div style="font-size: 14px; color: #6b7280;">Get assistance and tutorials</div>
+                            </div>
+                            <span style="color: #9ca3af;">›</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 12px;">
+                    <div style="padding: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">App Version</div>
+                                <div style="font-size: 14px; color: #6b7280;">v2.1.0 - Latest</div>
+                            </div>
+                            <span style="color: #10b981;">✓</span>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; cursor: pointer;" onclick="signOut()">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 4px; color: #dc2626;">Sign Out</div>
+                                <div style="font-size: 14px; color: #6b7280;">Log out of your account</div>
+                            </div>
+                            <span style="color: #dc2626;">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="showScreen('dashboard')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Dashboard</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('ai-assistant')">
+                    <div class="nav-icon">🤖</div>
+                    <div class="nav-label">AI Assistant</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('tasks')">
+                    <div class="nav-icon">✓</div>
+                    <div class="nav-label">Tasks</div>
+                </div>
+                <div class="nav-item active">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Voice Button -->
+        <button class="floating-mic" onclick="startVoiceCommand()" style="display: none;">🎤</button>
+    </div>
+
+    <!-- Emergency Mode Overlay -->
+    <div class="emergency-overlay" id="emergencyOverlay">
+        <div class="emergency-content">
+            <h3 class="emergency-title">🚨 Emergency Detected</h3>
+            <p style="margin-bottom: 20px; color: #6b7280;">
+                Urgent surgery detected. Your schedule has been automatically adjusted:
+            </p>
+            <div style="text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="font-size: 14px; margin-bottom: 8px;">
+                    <strong>Moved:</strong> 2 PM Team Meeting → 4 PM
+                </div>
+                <div style="font-size: 14px; margin-bottom: 8px;">
+                    <strong>Cancelled:</strong> 3 PM Administrative Review
+                </div>
+                <div style="font-size: 14px;">
+                    <strong>Notified:</strong> All affected colleagues
+                </div>
+            </div>
+            <button class="btn-primary" onclick="closeEmergency()">Got it</button>
+        </div>
+    </div>
+
+    <script>
+        let currentScreen = 'welcome';
+        let voiceListening = false;
+
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show target screen
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
+
+            // Show/hide floating mic based on screen
+            const floatingMic = document.querySelector('.floating-mic');
+            if (screenId === 'dashboard') {
+                floatingMic.style.display = 'flex';
+                // Update welcome message with user's name and position
+                updateWelcomeMessage();
+            } else {
+                floatingMic.style.display = 'none';
+            }
+
+            // Update bottom nav active state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+
+        function toggleVoiceInput(button) {
+            voiceListening = !voiceListening;
+            if (voiceListening) {
+                button.style.background = '#dc2626';
+                button.innerHTML = '⏹️';
+                button.style.animation = 'pulse 1s infinite';
+                
+                // Simulate voice input after 2 seconds
+                setTimeout(() => {
+                    const input = button.parentElement.parentElement.querySelector('.form-input');
+                    input.value = 'Emergency surgery scheduled for 2 PM';
+                    toggleVoiceInput(button);
+                }, 2000);
+            } else {
+                button.style.background = '#1e3a8a';
+                button.innerHTML = '🎤';
+                button.style.animation = 'none';
+            }
+        }
+
+        function addEvent() {
+            // Simulate adding event
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #10b981;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            notification.textContent = 'Event added successfully!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        function requestPermission() {
+            // Simulate permission request
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #1e3a8a;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            notification.textContent = 'Microphone access granted!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+                showScreen('onboarding3');
+            }, 1500);
+        }
+
+        function toggleSwitch(toggle) {
+            toggle.classList.toggle('active');
+        }
+
+        function switchTab(tab, content) {
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show/hide content
+            document.getElementById('today-content').style.display = content === 'today' ? 'block' : 'none';
+            document.getElementById('tasks-content').style.display = content === 'tasks' ? 'block' : 'none';
+        }
+
+        function startVoiceCommand() {
+            const button = event.target;
+            button.style.background = '#dc2626';
+            button.style.animation = 'pulse 1s infinite';
+            
+            // Simulate voice command processing
+            setTimeout(() => {
+                button.style.background = '#1e3a8a';
+                button.style.animation = 'none';
+                
+                // Show voice command result
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: white;
+                    border: 2px solid #1e3a8a;
+                    padding: 16px 24px;
+                    border-radius: 12px;
+                    z-index: 1000;
+                    font-weight: 600;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                    max-width: 280px;
+                    text-align: center;
+                `;
+                notification.innerHTML = `
+                    <div style="color: #1e3a8a; margin-bottom: 8px;">🎤 Voice Command</div>
+                    <div style="font-size: 14px; color: #6b7280;">"Remind me about patient rounds in 30 minutes"</div>
+                    <div style="font-size: 12px; color: #10b981; margin-top: 8px;">✓ Reminder set successfully</div>
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }, 2000);
+        }
+
+        function showEmergencyDemo() {
+            document.getElementById('emergencyOverlay').style.display = 'flex';
+        }
+
+        function closeEmergency() {
+            document.getElementById('emergencyOverlay').style.display = 'none';
+        }
+
+        function validateSignup() {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const position = document.getElementById('signupPosition').value;
+            
+            if (!name || !email || !password || !position) {
+                showNotification('Please fill in all fields to continue', 'error');
+                return;
+            }
+            
+            // Store user info and continue
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userPosition', position);
+            
+            showNotification(`Welcome, ${name}!`, 'success');
+            
+            setTimeout(() => {
+                showScreen('onboarding1');
+            }, 1500);
+        }
+
+        function validateLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if (!email || !password) {
+                showNotification('Please enter your email and password', 'error');
+                return;
+            }
+            
+            // Simulate login
+            showNotification('Welcome back!', 'success');
+            
+            setTimeout(() => {
+                showScreen('dashboard');
+            }, 1500);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#dc2626' : '#10b981'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function switchTaskTab(tab, content) {
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show/hide content
+            document.getElementById('ongoing-tasks').style.display = content === 'ongoing' ? 'block' : 'none';
+            document.getElementById('completed-tasks').style.display = content === 'completed' ? 'block' : 'none';
+            document.getElementById('todo-tasks').style.display = content === 'todo' ? 'block' : 'none';
+        }
+
+        function startTask(button) {
+            const taskCard = button.closest('.task-card');
+            button.textContent = 'Starting...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                taskCard.remove();
+                showNotification('Task started successfully!', 'success');
+            }, 1000);
+        }
+
+        function askAI(question) {
+            const conversation = document.getElementById('aiConversation');
+            const suggestions = document.querySelector('.ai-suggestions');
+            
+            // Hide suggestions and show conversation
+            suggestions.style.display = 'none';
+            conversation.style.display = 'block';
+            
+            // Update conversation with the question
+            const userBubble = conversation.querySelector('.user-bubble .bubble-content p');
+            const aiBubble = conversation.querySelector('.ai-bubble .bubble-content p');
+            
+            userBubble.textContent = question;
+            
+            // Simulate AI response based on question
+            let response = "I'm processing your request...";
+            if (question.includes('schedule')) {
+                response = "I found an available slot tomorrow at 2 PM. Would you like me to schedule the consultation then?";
+            } else if (question.includes('remind')) {
+                response = "I've set a reminder for your medication reviews. You'll get notifications 30 minutes before each review.";
+            } else if (question.includes('email')) {
+                response = "I've drafted an email to Dr. Johnson about the patient consultation. Would you like me to send it?";
+            } else if (question.includes('availability')) {
+                response = "Tomorrow you have 3 free slots: 10 AM-11 AM, 2 PM-3 PM, and 4 PM-5 PM. Which would work best?";
+            }
+            
+            setTimeout(() => {
+                aiBubble.textContent = response;
+            }, 1000);
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                askAI(message);
+                input.value = '';
+            }
+        }
+
+        function startAIVoice() {
+            const button = event.target.closest('.ai-voice-btn');
+            button.style.background = 'rgba(220, 38, 38, 0.8)';
+            
+            setTimeout(() => {
+                button.style.background = 'rgba(255,255,255,0.2)';
+                askAI('Schedule my next patient consultation');
+            }, 2000);
+        }
+
+        function signOut() {
+            localStorage.clear();
+            showNotification('Signed out successfully', 'success');
+            setTimeout(() => {
+                showScreen('welcome');
+            }, 1500);
+        }
+
+        function updateWelcomeMessage() {
+            const name = localStorage.getItem('userName') || 'Dr. Smith';
+            const position = localStorage.getItem('userPosition') || 'doctor';
+            const welcomeElement = document.getElementById('welcomeText');
+            
+            if (welcomeElement) {
+                const hour = new Date().getHours();
+                let greeting = 'Good morning';
+                if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
+                else if (hour >= 17) greeting = 'Good evening';
+                
+                let title = 'Dr.';
+                if (position === 'nurse') title = 'Nurse';
+                else if (position === 'surgeon') title = 'Dr.';
+                else if (position === 'resident') title = 'Dr.';
+                else if (position === 'physician-assistant') title = '';
+                else if (position === 'hospital-staff') title = '';
+                else if (position === 'administrator') title = '';
+                
+                const firstName = name.split(' ')[0];
+                welcomeElement.textContent = `${greeting}, ${title} ${firstName}`.trim();
+            }
+        }
+
+        function editSchedule() {
+            showScreen('onboarding1');
+        }
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            const userName = localStorage.getItem('userName');
+            if (userName) {
+                showScreen('dashboard');
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988e0d1293857e72',t:'MTc1OTUxMTQwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
